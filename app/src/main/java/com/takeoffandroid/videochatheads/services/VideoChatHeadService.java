@@ -55,8 +55,9 @@ public class VideoChatHeadService extends Service implements SurfaceHolder.Callb
 
     // get intent methods
     public static Intent getIntent(Context context) {
-        Intent intent = new Intent(context, VideoChatHeadService.class);
 
+
+        Intent intent = new Intent(context, VideoChatHeadService.class);
         return intent;
     }
 
@@ -65,8 +66,7 @@ public class VideoChatHeadService extends Service implements SurfaceHolder.Callb
     public void onCreate() {
         super.onCreate();
 
-        mWindowManager = (WindowManager) getSystemService(Service.WINDOW_SERVICE);
-        mVibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
     }
 
     @Override
@@ -77,6 +77,8 @@ public class VideoChatHeadService extends Service implements SurfaceHolder.Callb
     }
 
     private void showHud() {
+        mWindowManager = (WindowManager) getSystemService(Service.WINDOW_SERVICE);
+        mVibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
         if (mVideoSurfaceView[0] != null) {
             mWindowManager.removeView(mVideoSurfaceView[0]);
@@ -88,8 +90,10 @@ public class VideoChatHeadService extends Service implements SurfaceHolder.Callb
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.TYPE_PHONE,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-                PixelFormat.TRANSLUCENT);
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE|WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+       /*| WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE*/,
+
+        PixelFormat.TRANSLUCENT);
 
         DisplayMetrics displaymetrics = new DisplayMetrics();
         mWindowManager.getDefaultDisplay().getMetrics(displaymetrics);
@@ -151,7 +155,7 @@ public class VideoChatHeadService extends Service implements SurfaceHolder.Callb
         }
 
         mPaperParams.x = 0;
-        mPaperParams.y = 100;
+        mPaperParams.y = 50;
 
         mWindowManager.addView(myview, mPaperParams);
         addCrumpledPaperOnTouchListener();

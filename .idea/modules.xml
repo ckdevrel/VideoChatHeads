@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/android-facebook-like-chat-head-master.iml" filepath="$PROJECT_DIR$/android-facebook-like-chat-head-master.iml" />
+      <module fileurl="file://$PROJECT_DIR$/VideoChatHeads.iml" filepath="$PROJECT_DIR$/VideoChatHeads.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
