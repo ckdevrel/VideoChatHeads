@@ -6,21 +6,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.Vibrator;
 import android.support.annotation.Nullable;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.VideoView;
 
 import com.takeoffandroid.videochatheads.R;
 import com.takeoffandroid.videochatheads.views.VideoSurfaceView;
@@ -28,7 +24,7 @@ import com.takeoffandroid.videochatheads.views.VideoSurfaceView;
 import java.io.IOException;
 
 
-public class VideoChatHeadService extends Service implements SurfaceHolder.Callback{
+public class VideoChatHeadService extends Service implements SurfaceHolder.Callback {
 
     // constants
     public static final String BASIC_TAG = VideoChatHeadService.class.getName();
@@ -47,11 +43,11 @@ public class VideoChatHeadService extends Service implements SurfaceHolder.Callb
 
 //    MediaPlayer player;
 
-    private VideoSurfaceView[] mVideoSurfaceView = new VideoSurfaceView[1] ;
+    private VideoSurfaceView[] mVideoSurfaceView = new VideoSurfaceView[1];
 
 //    final String dataSources = "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4";
-    private LayoutInflater li;
-    private View myview;
+//    private LayoutInflater li;
+//    private View myview;
 
     // get intent methods
     public static Intent getIntent(Context context) {
@@ -84,16 +80,17 @@ public class VideoChatHeadService extends Service implements SurfaceHolder.Callb
             mWindowManager.removeView(mVideoSurfaceView[0]);
             mVideoSurfaceView[0] = null;
         }
-        li = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+//        li = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
 
         mPaperParams = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.TYPE_PHONE,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE|WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
        /*| WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE*/,
 
-        PixelFormat.TRANSLUCENT);
+                PixelFormat.TRANSLUCENT);
+
 
         DisplayMetrics displaymetrics = new DisplayMetrics();
         mWindowManager.getDefaultDisplay().getMetrics(displaymetrics);
@@ -101,10 +98,12 @@ public class VideoChatHeadService extends Service implements SurfaceHolder.Callb
         windowWidth = displaymetrics.widthPixels;
 
         mPaperParams.gravity = Gravity.TOP | Gravity.RIGHT;
+        mPaperParams.height = 200;
+        mPaperParams.width = 200;
 
 //        mVideoSurfaceView.setImageResource(R.drawable.ic_crumpled_paper);
 //        mVideoSurfaceView[0].setLayoutParams(new LinearLayout.LayoutParams(50,50));
-        myview = li.inflate(R.layout.view_video_chat_heads, null);
+//        myview = li.inflate(R.layout.view_video_chat_heads, null);
 
 //        String uriPath = "android.resource://com.dision.android.hudrecyclebin/"+R.raw.k;
 //        Uri uri = Uri.parse(uriPath);
@@ -115,7 +114,7 @@ public class VideoChatHeadService extends Service implements SurfaceHolder.Callb
         final int radius = getResources()
                 .getDimensionPixelOffset(R.dimen.corner_radius_video);
 
-        final String[] dataSources = new String[] {
+        final String[] dataSources = new String[]{
                 "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4",
                 "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4",
                 "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"
@@ -123,12 +122,24 @@ public class VideoChatHeadService extends Service implements SurfaceHolder.Callb
 
 
 //        mVideoSurfaceView[0] = (VideoSurfaceView) findViewById(R.id.video_surface_view1);
-        mVideoSurfaceView[0] = (VideoSurfaceView) myview.findViewById(R.id.video_surface_view);
-//        mVideoSurfaceView[2] = (VideoSurfaceView) findViewById(R.id.video_surface_view3);
+//        mVideoSurfaceView[0] = (VideoSurfaceView) myview.findViewById(R.id.video_surface_view);
 
+
+        mVideoSurfaceView[0] = new VideoSurfaceView(this);
 //        mVideoSurfaceView[0].setCornerRadius(radius);
         mVideoSurfaceView[0].setCornerRadius(radius);
 //        mVideoSurfaceView[2].setCornerRadius(radius);
+
+        if (Build.VERSION.SDK_INT >= 16) {
+            mVideoSurfaceView[0].setBackground(getDrawable(R.drawable.drawable_circle_white));
+        } else {
+            mVideoSurfaceView[0].setBackgroundDrawable(this.getResources().getDrawable(R.drawable.drawable_circle_white));
+        }
+
+        mPaperParams.x = 0;
+        mPaperParams.y = 50;
+
+        mWindowManager.addView(mVideoSurfaceView[0], mPaperParams);
 
         for (int i = 0; i < mVideoSurfaceView.length; i++) {
             final MediaPlayer mediaPlayer = new MediaPlayer();
@@ -153,11 +164,6 @@ public class VideoChatHeadService extends Service implements SurfaceHolder.Callb
                 mediaPlayer.release();
             }
         }
-
-        mPaperParams.x = 0;
-        mPaperParams.y = 50;
-
-        mWindowManager.addView(myview, mPaperParams);
         addCrumpledPaperOnTouchListener();
     }
 
@@ -218,9 +224,11 @@ public class VideoChatHeadService extends Service implements SurfaceHolder.Callb
                 PixelFormat.TRANSLUCENT);
 
         mRecycleBinParams.gravity = Gravity.BOTTOM | Gravity.CENTER;
+        mRecycleBinParams.height = 120;
+        mRecycleBinParams.width = 120;
 
         ivRecycleBin = new ImageView(this);
-        ivRecycleBin.setImageResource(R.drawable.ic_recycle_bin);
+        ivRecycleBin.setImageResource(R.drawable.ic_close);
 
         mRecycleBinParams.x = 0;
         mRecycleBinParams.y = 0;
