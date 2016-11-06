@@ -25,37 +25,38 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar_activity_main);
-        fab = (FloatingActionButton) findViewById(R.id.fab_activity_main);
 
-        initListeners();
         setUiSettings();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        initListeners();
+
+    }
+
     private void initListeners() {
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-                if(Build.VERSION.SDK_INT >= 23) {
-                    if (!Settings.canDrawOverlays(MainActivity.this)) {
-                        Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                                Uri.parse("package:" + getPackageName()));
-                        startActivityForResult(intent, 1234);
-                    }else{
-                        Intent i = VideoChatHeadService.getIntent(MainActivity.this);
-                        startService(i);
-                        MainActivity.this.finish();
-                    }
-                }
-                else
-                {
-                    Intent i = VideoChatHeadService.getIntent(MainActivity.this);
-                    startService(i);
-                    MainActivity.this.finish();
-                }
-
+        if(Build.VERSION.SDK_INT >= 23) {
+            if (!Settings.canDrawOverlays(MainActivity.this)) {
+                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                        Uri.parse("package:" + getPackageName()));
+                startActivityForResult(intent, 1234);
+            }else{
+                Intent i = VideoChatHeadService.getIntent(MainActivity.this);
+                startService(i);
+                MainActivity.this.finish();
             }
-        });
+        }
+        else
+        {
+            Intent i = VideoChatHeadService.getIntent(MainActivity.this);
+            startService(i);
+            MainActivity.this.finish();
+        }
+
     }
 
     @Override

@@ -5,8 +5,8 @@
     <solid android:color="#80000000" />
 
     <size
-        android:width="215dp"
-        android:height="215dp" />
+        android:width="@dimen/round_drawable_size"
+        android:height="@dimen/round_drawable_size" />
 
     <stroke
 

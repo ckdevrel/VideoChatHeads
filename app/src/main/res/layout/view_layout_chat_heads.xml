@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/drawable_circle_white"
+    android:gravity="center">
+
+
+    <com.takeoffandroid.videochatheads.views.VideoSurfaceView
+        android:id="@+id/video_surface_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"/>
+
+
+    <ImageView
+        android:id="@+id/img_play_pause"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_pause"
+        android:layout_gravity="center"/>
+
+
+</FrameLayout>
+
+
+
