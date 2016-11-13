@@ -1,6 +1,5 @@
 package com.takeoffandroid.videochatheads.services;
 
-import android.animation.ObjectAnimator;
 import android.annotation.TargetApi;
 import android.app.Service;
 import android.content.Context;
@@ -20,11 +19,11 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.takeoffandroid.videochatheads.R;
+import com.takeoffandroid.videochatheads.utils.Constants;
 import com.takeoffandroid.videochatheads.utils.Utils;
 import com.takeoffandroid.videochatheads.views.VideoSurfaceView;
 
@@ -39,31 +38,23 @@ public class VideoChatHeadService extends Service implements SurfaceHolder.Callb
     // variables
     private WindowManager mWindowManager;
     private Vibrator mVibrator;
-    private WindowManager.LayoutParams mPaperParams;
-    private WindowManager.LayoutParams mRecycleBinParams;
+    private WindowManager.LayoutParams mVideoViewParams;
+    private WindowManager.LayoutParams mCloseViewParams;
     private int windowHeight;
     private int windowWidth;
 
     private View closeView, chatHeadsView;
     private LayoutInflater liClose, liChatHeads;
 
-    // UI
-//    private VideoSurfaceView mVideoSurfaceView;
-    private ImageView ivRecycleBin, imgPlayPause;
+    private ImageView ivCloseView, imgPlayPause;
 
-//    MediaPlayer player;
 
     private VideoSurfaceView[] mVideoSurfaceView = new VideoSurfaceView[1];
     private MediaPlayer mediaPlayer;
     private boolean isMediaPrepared, isPlaying;
 
-//    final String dataSources = "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4";
-//    private View myview;
 
-    // get intent methods
     public static Intent getIntent(Context context) {
-
-
         Intent intent = new Intent(context, VideoChatHeadService.class);
         return intent;
     }
@@ -72,8 +63,6 @@ public class VideoChatHeadService extends Service implements SurfaceHolder.Callb
     @Override
     public void onCreate() {
         super.onCreate();
-
-
     }
 
     @Override
@@ -93,12 +82,11 @@ public class VideoChatHeadService extends Service implements SurfaceHolder.Callb
             mVideoSurfaceView[0] = null;
         }
 
-        mPaperParams = new WindowManager.LayoutParams(
+        mVideoViewParams = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.TYPE_PHONE,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
-       /*| WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE*/,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
 
                 PixelFormat.TRANSLUCENT);
 
@@ -108,53 +96,33 @@ public class VideoChatHeadService extends Service implements SurfaceHolder.Callb
         windowHeight = displaymetrics.heightPixels;
         windowWidth = displaymetrics.widthPixels;
 
-        mPaperParams.gravity = Gravity.TOP | Gravity.RIGHT;
-        mPaperParams.height = 200;
-        mPaperParams.width = 200;
+        mVideoViewParams.gravity = Gravity.TOP | Gravity.RIGHT;
+        mVideoViewParams.height = Constants.VIDEO_VIEW_CIRCLE_SIZE;
+        mVideoViewParams.width = Constants.VIDEO_VIEW_CIRCLE_SIZE;
 
-//        mVideoSurfaceView.setImageResource(R.drawable.ic_crumpled_paper);
-//        mVideoSurfaceView[0].setLayoutParams(new LinearLayout.LayoutParams(50,50));
-//        myview = li.inflate(R.layout.view_layout_chat_heads, null);
 
-//        String uriPath = "android.resource://com.dision.android.hudrecyclebin/"+R.raw.k;
-//        Uri uri = Uri.parse(uriPath);
-//        mVideoSurfaceView.setVideoURI(uri);
-//        mVideoSurfaceView.requestFocus();
-//        mVideoSurfaceView.start();
+//        final int radius = getResources()
+//                .getDimensionPixelOffset(R.dimen.corner_radius_video);
 
-        final int radius = getResources()
-                .getDimensionPixelOffset(R.dimen.corner_radius_video);
-
-        final String[] dataSources = new String[]{
-                "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4",
-                "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4",
-                "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"
-        };
 
 
         chatHeadsView = liChatHeads.inflate(R.layout.view_layout_chat_heads, null);
 
-//        mVideoSurfaceView[0] = (VideoSurfaceView) findViewById(R.id.video_surface_view1);
         mVideoSurfaceView[0] = (VideoSurfaceView) chatHeadsView.findViewById(R.id.video_surface_view);
 
         imgPlayPause = (ImageView) chatHeadsView.findViewById(R.id.img_play_pause);
 
 
-//        mVideoSurfaceView[0] = new VideoSurfaceView(this);
-//        mVideoSurfaceView[0].setCornerRadius(radius);
-        mVideoSurfaceView[0].setCornerRadius(radius);
-//        mVideoSurfaceView[2].setCornerRadius(radius);
+        mVideoSurfaceView[0].setCornerRadius(Constants.VIDEO_VIEW_CORNER_RADIUS);
 
+        mVideoViewParams.x = 0;
+        mVideoViewParams.y = 50;
 
-        mPaperParams.x = 0;
-        mPaperParams.y = 50;
+        mWindowManager.addView(chatHeadsView, mVideoViewParams);
 
-        mWindowManager.addView(chatHeadsView, mPaperParams);
-
-        for (int i = 0; i < mVideoSurfaceView.length; i++) {
             mediaPlayer = new MediaPlayer();
-            final VideoSurfaceView surfaceView = mVideoSurfaceView[i];
-            final String dataSource = dataSources[i];
+            final VideoSurfaceView surfaceView = mVideoSurfaceView[0];
+            final String dataSource = "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4";
             try {
                 mediaPlayer.setDataSource(dataSource);
                 // the video view will take care of calling prepare and attaching the surface once
@@ -195,12 +163,11 @@ public class VideoChatHeadService extends Service implements SurfaceHolder.Callb
                 e.printStackTrace();
                 mediaPlayer.release();
             }
-        }
-        addCrumpledPaperOnTouchListener();
+        addViewOnTouchListener();
     }
 
 
-    private void addCrumpledPaperOnTouchListener() {
+    private void addViewOnTouchListener() {
 
 
         chatHeadsView.setOnTouchListener(new View.OnTouchListener() {
@@ -215,27 +182,23 @@ public class VideoChatHeadService extends Service implements SurfaceHolder.Callb
                     case MotionEvent.ACTION_DOWN:
 
 
-                        initialX = mPaperParams.x;
-                        initialY = mPaperParams.y;
+                        initialX = mVideoViewParams.x;
+                        initialY = mVideoViewParams.y;
                         initialTouchX = event.getRawX();
                         initialTouchY = event.getRawY();
-                        // add recycle bin when moving crumpled paper
+                        // add closeview when moving video view
                         addCloseView();
 
                         return true;
                     case MotionEvent.ACTION_UP:
 
-
-//                        if(!isMoved){
-//                            Toast.makeText(VideoChatHeadService.this, "clicked chat heads", Toast.LENGTH_SHORT).show();
-//                        }
-
                         if ((Math.abs(initialTouchX - event.getRawX()) < 5) && (Math.abs(initialTouchY - event.getRawY()) < 5)) {
 
-                            Toast.makeText(VideoChatHeadService.this, "clicked chat heads", Toast.LENGTH_SHORT).show();
 
                             if (isMediaPrepared) {
                                 if (isPlaying) {
+
+                                    Toast.makeText(VideoChatHeadService.this, "Pause Video", Toast.LENGTH_SHORT).show();
 
                                     isPlaying = false;
                                     imgPlayPause.setVisibility(View.VISIBLE);
@@ -248,7 +211,7 @@ public class VideoChatHeadService extends Service implements SurfaceHolder.Callb
 
                                     isPlaying = true;
 
-//                                    Utils.setBackground(VideoChatHeadService.this, imgPlayPause, R.drawable.ic_play);
+                                    Toast.makeText(VideoChatHeadService.this, "Play Video", Toast.LENGTH_SHORT).show();
 
                                     imgPlayPause.setImageResource(R.drawable.ic_play);
 
@@ -268,9 +231,9 @@ public class VideoChatHeadService extends Service implements SurfaceHolder.Callb
 
                         int centerOfScreenByX = windowWidth / 2;
 
-                        // remove crumpled paper when the it is in the recycle bin's area
-                        if ((mPaperParams.y > windowHeight - closeView.getHeight() - chatHeadsView.getHeight()) &&
-                                ((mPaperParams.x > centerOfScreenByX - ivRecycleBin.getWidth() - chatHeadsView.getWidth() / 2) && (mPaperParams.x < centerOfScreenByX + ivRecycleBin.getWidth() / 2))) {
+                        // remove video view when the it is in the close view area
+                        if ((mVideoViewParams.y > windowHeight - closeView.getHeight() - chatHeadsView.getHeight()) &&
+                                ((mVideoViewParams.x > centerOfScreenByX - ivCloseView.getWidth() - chatHeadsView.getWidth() / 2) && (mVideoViewParams.x < centerOfScreenByX + ivCloseView.getWidth() / 2))) {
                             mVibrator.vibrate(100);
 
 
@@ -283,17 +246,17 @@ public class VideoChatHeadService extends Service implements SurfaceHolder.Callb
                         }
 
 
-                        // always remove recycle bin ImageView when paper is dropped
+                        // always remove close view ImageView when video view is dropped
                         mWindowManager.removeView(closeView);
-                        ivRecycleBin = null;
+                        ivCloseView = null;
 
                         return true;
                     case MotionEvent.ACTION_MOVE:
-                        // move paper ImageView
+                        // move videoview ImageView
 
-                        mPaperParams.x = initialX + (int) (initialTouchX - event.getRawX());
-                        mPaperParams.y = initialY + (int) (event.getRawY() - initialTouchY);
-                        mWindowManager.updateViewLayout(chatHeadsView, mPaperParams);
+                        mVideoViewParams.x = initialX + (int) (initialTouchX - event.getRawX());
+                        mVideoViewParams.y = initialY + (int) (event.getRawY() - initialTouchY);
+                        mWindowManager.updateViewLayout(chatHeadsView, mVideoViewParams);
                         return true;
                 }
                 return false;
@@ -305,29 +268,26 @@ public class VideoChatHeadService extends Service implements SurfaceHolder.Callb
 
         liClose = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
 
-        // add recycle bin ImageView centered on the bottom of the screen
-        mRecycleBinParams = new WindowManager.LayoutParams(
+        // add close view ImageView centered on the bottom of the screen
+        mCloseViewParams = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.TYPE_PHONE,
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
                 PixelFormat.TRANSLUCENT);
 
-        mRecycleBinParams.gravity = Gravity.BOTTOM | Gravity.CENTER;
-        mRecycleBinParams.height = 400;
-        mRecycleBinParams.width = WindowManager.LayoutParams.MATCH_PARENT;
+        mCloseViewParams.gravity = Gravity.BOTTOM | Gravity.CENTER;
+        mCloseViewParams.height = 400;
+        mCloseViewParams.width = WindowManager.LayoutParams.MATCH_PARENT;
 
         closeView = liClose.inflate(R.layout.view_layout_close, null);
 
-        ivRecycleBin = (ImageView) closeView.findViewById(R.id.img_close);
+        ivCloseView = (ImageView) closeView.findViewById(R.id.img_close);
 
-//        ivRecycleBin = new ImageView(this);
-//        ivRecycleBin.setImageResource(R.drawable.ic_close);
+        mCloseViewParams.x = 0;
+        mCloseViewParams.y = 0;
 
-        mRecycleBinParams.x = 0;
-        mRecycleBinParams.y = 0;
-
-        mWindowManager.addView(closeView, mRecycleBinParams);
+        mWindowManager.addView(closeView, mCloseViewParams);
     }
 
     @Nullable
@@ -347,9 +307,9 @@ public class VideoChatHeadService extends Service implements SurfaceHolder.Callb
             imgPlayPause = null;
         }
 
-        if (ivRecycleBin != null) {
+        if (ivCloseView != null) {
             mWindowManager.removeView(closeView);
-            ivRecycleBin = null;
+            ivCloseView = null;
         }
 
         if (isMediaPrepared) {
@@ -362,20 +322,16 @@ public class VideoChatHeadService extends Service implements SurfaceHolder.Callb
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-//        player.setDisplay(holder);
-//        player.start();
     }
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
 
-        Log.i("VideoChatHeads", "surfaceChanged");
     }
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
 
-        Log.i("VideoChatHeads", "surfaceDestroyed");
 
     }
 

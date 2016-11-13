@@ -3,8 +3,6 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="corner_radius_video">39dip</dimen>
-
-    <dimen name="round_drawable_size">223dp</dimen>
-
+    <dimen name="round_drawable_size">233dp</dimen>
 
 </resources>
