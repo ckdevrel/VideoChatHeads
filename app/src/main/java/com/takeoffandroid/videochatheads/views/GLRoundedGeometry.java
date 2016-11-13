@@ -4,9 +4,7 @@ import android.graphics.Point;
 import android.graphics.RectF;
 import android.support.annotation.NonNull;
 
-/**
- * Created by fabrantes on 03/04/15.
- */
+
 public class GLRoundedGeometry {
 
     // The key points of the geometry
