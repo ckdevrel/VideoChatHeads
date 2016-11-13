@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">VideoChatHeads</string>
+    <string name="app_name">Facebook-VideoChatHeads</string>
     <string name="action_settings">Settings</string>
     <string name="tv_activity_main_instructions">Press play button and throw the paper into recycle bin.</string>
 </resources>
