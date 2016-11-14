@@ -3,7 +3,7 @@
 Why this repo?
 --------------
 
-This repo is created with the inspiration of Facebook Video profile feature which was introduced in the recent release, as you can keep Videos instead of a profile image. But the implementation of this view is missing in the messenger chat heads (Since the Video profile users chat heads are even displayed as an image). So I created this repo to show a VideoChatHeads for such users.
+This repo enables you to show videos instead of usual profile picture for chat heads. Inspired from Facebook's Video profile picture, I decided to replicate its implementation to show videos in profile picture and to create chat heads for the same (Even the Facebook's own Messenger does not support video in their profile picture yet).
 
 
 <a href="http://imgur.com/biUpeZp"><img src="http://i.imgur.com/biUpeZp.gif" title="source: imgur.com" /></a>
